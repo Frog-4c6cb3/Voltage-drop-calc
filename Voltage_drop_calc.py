@@ -1,11 +1,11 @@
-# Ver1.0.0
+# Ver1.0.1
 # Tkinterのインポート
 from tkinter import ttk
 import tkinter
 from tkinter.constants import RIGHT
 
 # 電線抵抗
-SQR = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 180]
+SQR = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185]  # 180を185に訂正
 R20km = [12.2, 7.56, 4.7, 3.11, 1.84, 1.16, 0.734,
          0.529, 0.391, 0.27, 0.195, 0.154, 0.126, 0.1]
 R20m = dict(zip(SQR, R20km))
@@ -37,7 +37,7 @@ def calculate():
 
 # rootメインウィンドウの設定
 root = tkinter.Tk()
-root.title("電圧降下計算 (V1.0.0)")
+root.title("電圧降下計算 (V1.0.1)")
 
 # Frameを設定
 frame1 = ttk.Frame(root)
