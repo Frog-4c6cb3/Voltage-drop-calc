@@ -1,8 +1,10 @@
-# Ver1.3.0
+# Ver1.4.0
 # Tkinterのインポート
 from tkinter import ttk
 import tkinter
-from tkinter.constants import RIGHT
+from tkinter.constants import GROOVE, RIGHT
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # 電線抵抗
 SQR = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185]
@@ -53,6 +55,35 @@ def auto_sqr(r, V, A, L, N):
     return "Error"
 
 
+def plot_sqr(x, y):
+    # Figureインスタンスを生成する
+    fig = plt.Figure()
+    # メモリを内側にする
+    plt.rcParams['xtick.direction'] = 'in'
+    plt.rcParams['ytick.direction'] = 'in'
+
+    r = int(var.get())
+    rate = float(rate_entry.get())
+
+    ax1 = fig.add_subplot(111)
+    ax1.yaxis.set_ticks_position('both')
+    ax1.yaxis.set_ticks_position('both')
+
+    ax1.set_xlabel("Cable sq (mm2)")
+    ax1.set_ylabel("Voltage drop (%)")
+    if r <= 1:
+        ax1.set_ylim(0, 7)
+        ax1.set_xlim(0, 120)
+    else:
+        ax1.set_ylim(0, 11)
+        ax1.set_xlim(0, 120)
+    ax1.grid()
+    ax1.plot(x, y, marker='o')
+    ax1.plot(rate)
+
+    return fig
+
+
 def calculate():
     r = int(var.get())
     V = float(V_entry.get())
@@ -71,10 +102,23 @@ def calculate():
     ans_rate_entry.delete(0, tkinter.END)
     ans_rate_entry.insert(0, round(Vdr, 2))
 
+    # プロット
+    x1 = []
+    y1 = []
+    for sqr in SQR:
+        x1.append(sqr)
+        vd = v_drop(r, A, sqr, L, N)
+        y1.append(v_drop_rate(vd, V))
+    fig = plot_sqr(x1, y1)
+    canvas = FigureCanvasTkAgg(fig, frame_fig)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=0)
+
 
 # rootメインウィンドウの設定
 root = tkinter.Tk()
-root.title("電圧降下計算 (V1.3.0)")
+root.title("電圧降下計算 (Ver1.4.0)")
+root.geometry()
 
 # Frameを設定
 frame0 = ttk.Frame(root)
@@ -93,7 +137,7 @@ frame61 = ttk.Frame(root)
 frame7 = ttk.Frame(root)
 frame8 = ttk.Frame(root)
 frame9 = ttk.Frame(root)
-
+frame_fig = ttk.Frame(root, border=4, relief=GROOVE)
 
 # Frameの配置
 frame0.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
@@ -141,13 +185,13 @@ rad3.pack(side=tkinter.LEFT)
 # ラベル
 label1 = ttk.Label(frame10, text="電圧(V)")
 label2 = ttk.Label(frame20, text="電流(A)")
-label3 = ttk.Label(frame30, text="電線SQR(mm2)")
+label3 = ttk.Label(frame30, text="電線断面積(mm2)")
 label4 = ttk.Label(frame40, text="電線長(m)")
 label5 = ttk.Label(frame50, text="電線本数(本)")
 label6 = ttk.Label(frame60, text="許容電圧降下率(%)")
 label7 = ttk.Label(label_frame1, text="電圧降下(V)")
 label8 = ttk.Label(label_frame1, text="電圧降下率(%)")
-label9 = ttk.Label(label_frame2, text="電線SQR(mm2)")
+label9 = ttk.Label(label_frame2, text="電線断面積(mm2)")
 
 
 label1.pack()
@@ -169,7 +213,7 @@ V_entry = ttk.Entry(
     width=20,
     justify=RIGHT,
 )
-V_entry.insert(0, 440)
+V_entry.insert(0, 220)
 
 A_entry = ttk.Entry(
     frame21,
@@ -234,6 +278,10 @@ auto_sqr_entry.grid(row=0, column=1)
 # ボタンの配置
 button1 = ttk.Button(frame7, text="計算開始", command=calculate)
 button1.pack()
+fig = plot_sqr(0, 0)
+canvas = FigureCanvasTkAgg(fig, frame_fig)
 
+frame_fig.grid(row=0, column=2, rowspan=10)
+canvas.get_tk_widget().grid(row=0, column=0)
 
 root.mainloop()
