@@ -1,4 +1,4 @@
-# Ver1.2.0
+# Ver1.3.0
 # Tkinterのインポート
 from tkinter import ttk
 import tkinter
@@ -10,15 +10,21 @@ R20km = [12.2, 7.56, 4.7, 3.11, 1.84, 1.16, 0.734,
          0.529, 0.391, 0.27, 0.195, 0.154, 0.126, 0.1]
 R20m = dict(zip(SQR, R20km))
 
+# 三相交流の電圧降下計算
+
 
 def v_drop_3p(Amp, sqr, length, num):
     vd = R20m[sqr]*1.3*2*length*(Amp/num)*(1.732/2)/1000
     return vd
 
+# 単相・直流の電圧降下計算
+
 
 def v_drop_dc(Amp, sqr, length, num):
     vd = R20m[sqr]*1.3*2*length*(Amp/num)/1000
     return vd
+
+# 三相or単相・直流の判断
 
 
 def v_drop(r, A, S, L, N):
@@ -27,6 +33,8 @@ def v_drop(r, A, S, L, N):
     else:
         Vd = v_drop_dc(A, S, L, N)
     return Vd
+
+# 電圧降下率計算
 
 
 def v_drop_rate(vd, voltage):
@@ -42,7 +50,7 @@ def auto_sqr(r, V, A, L, N):
         if Vdr <= rate:
             return sqr
             break
-    return "error"
+    return "Error"
 
 
 def calculate():
@@ -66,7 +74,7 @@ def calculate():
 
 # rootメインウィンドウの設定
 root = tkinter.Tk()
-root.title("電圧降下計算 (V1.2.0)")
+root.title("電圧降下計算 (V1.3.0)")
 
 # Frameを設定
 frame0 = ttk.Frame(root)
